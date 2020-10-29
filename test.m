@@ -22,17 +22,20 @@ function test()
 %      
 % REFERENCE AND LICENSE: 
 %   Copyright 2020 Marco Nugnes
-%   https://www.compass.polimi.it
-%
-%   This set of codes is distributed under the 3-clause BSD license (see 
-%   below) with the additional clause to cite the reference paper where the
-%   theoretical work is explained and the website of the COMPASS project, 
-%   which funded the research:
-%   - Nugnes M., Colombo, C., and Tipaldi, M., "Coverage Area Determination
-%	for Conical Fields of View Considering an Oblate Earth", Journal of
-%	Guidance, Control, and Dynamics, Vol. 42, No. 10, pp. 2233-2245, 2019.
-%	DOI: https://doi.org/10.2514/1.G004156.
-%   - https://compass.polimi.it.
+%   This code is made available under the Creative Commons 
+%   Attribution-NonCommercial-ShareAlike 4.0 International(CC BY-NC-SA 4.0)
+%   This license is accessible at:
+%   https://creativecommons.org/licenses/by-nc-sa/4.0/
+%   The code is free to use for research purposes, but whenever used I 
+%   kindly ask to cite the following article where the theoretical 
+%   framework of the code is explained:
+%   Nugnes M., Colombo, C., and Tipaldi, M., "Coverage Area Determination 
+%   for Conical Fields of View Considering an Oblate Earth", Journal of 
+%   Guidance, Control, and Dynamics, Vol. 42, No. 10, pp. 2233-2245, 2019.
+%   DOI: https://doi.org/10.2514/1.G004156.
+%   For more info about this research visit the website: 
+%   https://compass.polimi.it. 
+%   For commercial use, please contact the author. 
 %
 % ACKNWOLEDGEMENT
 %   The research leading to these results has received funding from the 
@@ -42,12 +45,23 @@ function test()
 %
 % -----------------------------------------------------------------------
 
-% Physical constants
-w_Earth = (2*pi)/(24*3600);         % Earth rotation rate [rad/s]
+close all
+
+% WGS-84 parameters definition
+a_Earth = 6378.137;                 % Earth semi-major axid [km]
+f = 1/298.257223563;                % Earth flattening
+mu_Earth = 398600.4418;             % Earth gravitational parameter [km^3/s^2]
+w_Earth = 7.292115e-5;              % Earth rotation rate  WGS-84[rad/s]
+
+% Derived quantities
+R_eq = a_Earth;                     % Equatorial radius [km]
+R_pol = a_Earth*(1-f);              % Polar radius [km]        
+% R_pol = R_eq;                      % Polar radius [km]
+
+% Define the coverage properties
 eta = 10;                           % Half-aperture angle [deg]
-epsilon = 8;                        % Minimum elevation angle [deg]
-N = 30;                             % Discretisation of the conical signal
-mu = 398600.4418;                   % Earth gravitational parameter [km^3/s^2]
+epsilon = 10;                       % Minimum elevation angle [deg]
+N = 50;                             % Discretisation of the conical signal
 
 % Keplerian elements of a Galileo satellite
 a = 29600;                          % Semi-major axis [km]
@@ -58,7 +72,7 @@ om = 0;                             % Pericenter anomaly [rad]
 ni = 0;                             % Initial true anomaly [rad]
 
 % Orbital period
-T = 2*pi*sqrt(a^3/mu);
+T = 2*pi*sqrt(a^3/mu_Earth);
 
 % Define the vector of true anomalies
 theta = linspace(ni,2*pi + ni,360);
@@ -67,13 +81,11 @@ theta = linspace(ni,2*pi + ni,360);
 E = 2*atan(sqrt((1-e)/(1+e)).*tan(theta./2));
 
 % Compute the time vector related to the true anomaly vector
-t = sqrt(a^3/mu).*(E-e.*sin(E));
+t = sqrt(a^3/mu_Earth).*(E-e.*sin(E));
 t(t < 0) = t(t < 0) + T;
 
 % Construction of the Earth surface
 n_panels = 180;
-R_eq = 6378.1363;                       % Equatorial radius
-R_pol = 6356.7516005;                   % Polar radius
 [x_Earth,y_Earth,z_Earth] = ellipsoid(0,0,0,R_eq, R_eq, R_pol, n_panels);
 
 % Inertial coordinates of the Earth oblate ellipsoid
@@ -116,8 +128,8 @@ for j = 1:360
     n_GEO = -r_SC/norm(r_SC);
     
     % Compute the coverage with one of the two methods
-    [~,~,~,P1_in,P2_in] = coverage_function(r_SC,eta,n_GEO,1,N);
-%     [~,~,~,P1_in,P2_in] = coverage_function(r_SC,epsilon,n_GEO,0,N);
+%    [~,~,~,P1_in,P2_in] = coverage_function(R_eq,R_pol,r_SC,eta,n_GEO,1,N);
+    [~,~,~,P1_in,P2_in] = coverage_function(R_eq,R_pol,r_SC,epsilon,n_GEO,0,N);
     
     % Save the result of the Earth point in view of the satellite
     area = [P1_in;

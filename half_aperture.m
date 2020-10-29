@@ -1,4 +1,4 @@
-function [P1,P2,epsilon_1,epsilon_2] = half_aperture(a_tilde,b_tilde,alpha_SC,eta,r_line_local)
+function [P1,P2,epsilon_1,epsilon_2] = half_aperture(a_tilde,b_tilde,alpha_SC,eta,eta_hor_1,eta_hor_2,r_line_local)
 
 % half_aperture.m - Function to compute the area covered starting from the half-aperture angle.
 %
@@ -14,6 +14,8 @@ function [P1,P2,epsilon_1,epsilon_2] = half_aperture(a_tilde,b_tilde,alpha_SC,et
 %   b_tilde             Semi-minor axis of the intersected ellipse [km]
 %   alpha_SC            Angle of the S/C w.r.t. the axis e in local frame
 %   eta                 Half-aperture angle [deg]
+%   eta_hor_1           Horizon-boresight angle of the right side [rad]
+%   eta_hor_2           Horizon-boresight angle of the left side [rad]
 %   r_line_local        S/C position vector in the ellipse frame [km]
 %
 % OUTPUT:
@@ -30,17 +32,20 @@ function [P1,P2,epsilon_1,epsilon_2] = half_aperture(a_tilde,b_tilde,alpha_SC,et
 %      
 % REFERENCE AND LICENSE: 
 %   Copyright 2020 Marco Nugnes
-%   https://www.compass.polimi.it
-%
-%   This set of codes is distributed under the 3-clause BSD license (see 
-%   below) with the additional clause to cite the reference paper where the
-%   theoretical work is explained and the website of the COMPASS project, 
-%   which funded the research:
-%   - Nugnes M., Colombo, C., and Tipaldi, M., "Coverage Area Determination
-%	for Conical Fields of View Considering an Oblate Earth", Journal of
-%	Guidance, Control, and Dynamics, Vol. 42, No. 10, pp. 2233-2245, 2019.
-%	DOI: https://doi.org/10.2514/1.G004156.
-%   - https://compass.polimi.it.
+%   This code is made available under the Creative Commons 
+%   Attribution-NonCommercial-ShareAlike 4.0 International(CC BY-NC-SA 4.0)
+%   This license is accessible at:
+%   https://creativecommons.org/licenses/by-nc-sa/4.0/
+%   The code is free to use for research purposes, but whenever used I 
+%   kindly ask to cite the following article where the theoretical 
+%   framework of the code is explained:
+%   Nugnes M., Colombo, C., and Tipaldi, M., "Coverage Area Determination 
+%   for Conical Fields of View Considering an Oblate Earth", Journal of 
+%   Guidance, Control, and Dynamics, Vol. 42, No. 10, pp. 2233-2245, 2019.
+%   DOI: https://doi.org/10.2514/1.G004156.
+%   For more info about this research visit the website: 
+%   https://compass.polimi.it. 
+%   For commercial use, please contact the author. 
 %
 % ACKNWOLEDGEMENT
 %   The research leading to these results has received funding from the 
@@ -58,12 +63,29 @@ u_sc = r_line_local(2);
 % Aperture angles initialisation
 eta = eta*pi/180;
 
+% Check if your aperture angle is bigger than the horizon one
+% if eta > eta_hor_1 || eta > eta_hor_2
+%     error('The half-aperture angle is greater than the horizon-boresight angle. Reduce the value of the half-aperture angle.');
+% end
+
+if eta > eta_hor_1 
+    eta_1 = eta_hor_1 - 0.0001*pi/180;
+else
+    eta_1 = eta;
+end
+
+if eta > eta_hor_2 
+    eta_2 = eta_hor_2 - 0.0001*pi/180;
+else
+    eta_2 = eta;
+end
+
 % First case
 if  alpha_SC >= 0 && alpha_SC <= pi/2  % First Quadrant
     
     % Angle of the secants w.r.to the semi-major axis direction
-    alpha_P1 = (alpha_SC - eta);
-    alpha_P2 = (alpha_SC + eta);
+    alpha_P1 = (alpha_SC - eta_1);
+    alpha_P2 = (alpha_SC + eta_2);
     
     % Slopes of the two secants
     m_P1 = tan(alpha_P1);
@@ -111,8 +133,8 @@ end
 if  alpha_SC > pi/2 && alpha_SC <= pi   % Second Quadrant
     
     % Angle of the secants w.r.to the semi-major axis direction
-    alpha_P1 = (alpha_SC - eta);
-    alpha_P2 = (alpha_SC + eta);
+    alpha_P1 = (alpha_SC - eta_1);
+    alpha_P2 = (alpha_SC + eta_2);
     
     % Slopes of the two secants
     m_P1 = tan(alpha_P1);
@@ -160,8 +182,8 @@ end
 if  alpha_SC >= -pi && alpha_SC <= -pi/2   % Third Quadrant
     
     % Angle of the secants w.r.to the semi-major axis direction
-    alpha_P1 = (alpha_SC - eta);
-    alpha_P2 = (alpha_SC + eta);
+    alpha_P1 = (alpha_SC - eta_1);
+    alpha_P2 = (alpha_SC + eta_2);
     
     % Slopes of the two secants
     m_P1 = tan(alpha_P1);
@@ -209,8 +231,8 @@ end
 if  alpha_SC > -pi/2 && alpha_SC < 0     % Fourth quadrant
     
     % Angle of the secants w.r.to the semi-major axis direction
-    alpha_P1 = (alpha_SC - eta);
-    alpha_P2 = (alpha_SC + eta);
+    alpha_P1 = (alpha_SC - eta_1);
+    alpha_P2 = (alpha_SC + eta_2);
     
     % Slopes of the two secants
     m_P1 = tan(alpha_P1);

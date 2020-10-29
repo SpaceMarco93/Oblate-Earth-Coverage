@@ -34,17 +34,20 @@ function [P1,P2,eta_1,eta_2] = elevation(a_tilde,b_tilde,alpha_SC,eta_hor_1,eta_
 %      
 % REFERENCE AND LICENSE: 
 %   Copyright 2020 Marco Nugnes
-%   https://www.compass.polimi.it
-%
-%   This set of codes is distributed under the 3-clause BSD license (see 
-%   below) with the additional clause to cite the reference paper where the
-%   theoretical work is explained and the website of the COMPASS project, 
-%   which funded the research:
-%   - Nugnes M., Colombo, C., and Tipaldi, M., "Coverage Area Determination
-%	for Conical Fields of View Considering an Oblate Earth", Journal of
-%	Guidance, Control, and Dynamics, Vol. 42, No. 10, pp. 2233-2245, 2019.
-%	DOI: https://doi.org/10.2514/1.G004156.
-%   - https://compass.polimi.it.
+%   This code is made available under the Creative Commons 
+%   Attribution-NonCommercial-ShareAlike 4.0 International(CC BY-NC-SA 4.0)
+%   This license is accessible at:
+%   https://creativecommons.org/licenses/by-nc-sa/4.0/
+%   The code is free to use for research purposes, but whenever used I 
+%   kindly ask to cite the following article where the theoretical 
+%   framework of the code is explained:
+%   Nugnes M., Colombo, C., and Tipaldi, M., "Coverage Area Determination 
+%   for Conical Fields of View Considering an Oblate Earth", Journal of 
+%   Guidance, Control, and Dynamics, Vol. 42, No. 10, pp. 2233-2245, 2019.
+%   DOI: https://doi.org/10.2514/1.G004156.
+%   For more info about this research visit the website: 
+%   https://compass.polimi.it. 
+%   For commercial use, please contact the author. 
 %
 % ACKNWOLEDGEMENT
 %   The research leading to these results has received funding from the 
@@ -60,8 +63,8 @@ e_sc = r_line_local(1);
 u_sc = r_line_local(2);
 
 % Aperture angles initialisation
-eta_1 = eta_hor_1 - 0.005;
-eta_2 = eta_hor_2 - 0.005;
+eta_1 = eta_hor_1 - 0.0001*pi/180;
+eta_2 = eta_hor_2 - 0.0001*pi/180;
 
 % Errors and tolerance initialisation
 err_1 = 1;

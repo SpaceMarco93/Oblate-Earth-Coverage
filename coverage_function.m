@@ -1,4 +1,4 @@
-function [r_SC_proj,eta_hor,lambda_hor,P1_in,P2_in] = coverage_function(r_SC,angle,n,flag,N,tol)
+function [r_SC_proj,eta_hor,lambda_hor,P1_in,P2_in] = coverage_function(a,b,r_SC,angle,n,flag,N,tol)
 
 % coverage_function.m - Instantaneous access area in the Geocentric frame for a generic perturbed pointing.
 %
@@ -12,6 +12,8 @@ function [r_SC_proj,eta_hor,lambda_hor,P1_in,P2_in] = coverage_function(r_SC,ang
 %   generic perturbed pointing.
 %
 % INPUT:
+%   a                   Oblate ellipsoid semi-major axis [km]
+%   b                   Oblate ellipsoid semi-minor axis [km]
 %   r_SC                S/C position vector in Geocentric Inertial frame [km]
 %   angle               Starting angle:
 %                           - half-aperture angle [deg]
@@ -41,17 +43,20 @@ function [r_SC_proj,eta_hor,lambda_hor,P1_in,P2_in] = coverage_function(r_SC,ang
 %      
 % REFERENCE AND LICENSE: 
 %   Copyright 2020 Marco Nugnes
-%   https://www.compass.polimi.it
-%
-%   This set of codes is distributed under the 3-clause BSD license (see 
-%   below) with the additional clause to cite the reference paper where the
-%   theoretical work is explained and the website of the COMPASS project, 
-%   which funded the research:
-%   - Nugnes M., Colombo, C., and Tipaldi, M., "Coverage Area Determination
-%	for Conical Fields of View Considering an Oblate Earth", Journal of
-%	Guidance, Control, and Dynamics, Vol. 42, No. 10, pp. 2233-2245, 2019.
-%	DOI: https://doi.org/10.2514/1.G004156.
-%   - https://compass.polimi.it.
+%   This code is made available under the Creative Commons 
+%   Attribution-NonCommercial-ShareAlike 4.0 International(CC BY-NC-SA 4.0)
+%   This license is accessible at:
+%   https://creativecommons.org/licenses/by-nc-sa/4.0/
+%   The code is free to use for research purposes, but whenever used I 
+%   kindly ask to cite the following article where the theoretical 
+%   framework of the code is explained:
+%   Nugnes M., Colombo, C., and Tipaldi, M., "Coverage Area Determination 
+%   for Conical Fields of View Considering an Oblate Earth", Journal of 
+%   Guidance, Control, and Dynamics, Vol. 42, No. 10, pp. 2233-2245, 2019.
+%   DOI: https://doi.org/10.2514/1.G004156.
+%   For more info about this research visit the website: 
+%   https://compass.polimi.it. 
+%   For commercial use, please contact the author. 
 %
 % ACKNWOLEDGEMENT
 %   The research leading to these results has received funding from the 
@@ -64,11 +69,11 @@ function [r_SC_proj,eta_hor,lambda_hor,P1_in,P2_in] = coverage_function(r_SC,ang
 %% Initialisation
 
 % Assign the default parameters
-if nargin < 6
+if nargin < 8
     tol = 1e-4;
-    if nargin < 5
+    if nargin < 7
         N = 30;
-        if nargin < 4
+        if nargin < 6
             flag = 1;
         end
     end
@@ -81,9 +86,7 @@ else
     epsilon = angle;
 end
 
-% Geometric data for the Earth oblate ellipsoid (WGS-84)
-a = 6378.1363;                        % Oblate ellipsoid semi-major axis [km]
-b = 6356.7516005;                     % Oblate ellipsoid semi-minor axis [km]
+% Eccentricity of the oblate ellipsoid (WGS-84)
 E = sqrt(1 - b^2/a^2);                % Oblate ellipsoid eccentricity
 
 % Fix the S/C position vector and the direction as column vectors
@@ -144,7 +147,7 @@ for i = 1:N
     
     % Compute the points in the local frame according to the method
     if flag == 1
-        [P1,P2,~,~] = half_aperture(a_tilde,b_tilde,alpha_SC,eta,r_line_local);
+        [P1,P2,~,~] = half_aperture(a_tilde,b_tilde,alpha_SC,eta,eta_hor_1,eta_hor_2,r_line_local);
     else
         [P1,P2,~,~] = elevation(a_tilde,b_tilde,alpha_SC,eta_hor_1,eta_hor_2,epsilon,tol,r_line_local);
     end

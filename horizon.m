@@ -30,17 +30,20 @@ function [eta_hor_1,eta_hor_2,lambda_hor,alpha_SC] = horizon(a_tilde,b_tilde,r_l
 %      
 % REFERENCE AND LICENSE: 
 %   Copyright 2020 Marco Nugnes
-%   https://www.compass.polimi.it
-%
-%   This set of codes is distributed under the 3-clause BSD license (see 
-%   below) with the additional clause to cite the reference paper where the
-%   theoretical work is explained and the website of the COMPASS project, 
-%   which funded the research:
-%   - Nugnes M., Colombo, C., and Tipaldi, M., "Coverage Area Determination
-%	for Conical Fields of View Considering an Oblate Earth", Journal of
-%	Guidance, Control, and Dynamics, Vol. 42, No. 10, pp. 2233-2245, 2019.
-%	DOI: https://doi.org/10.2514/1.G004156.
-%   - https://compass.polimi.it.
+%   This code is made available under the Creative Commons 
+%   Attribution-NonCommercial-ShareAlike 4.0 International(CC BY-NC-SA 4.0)
+%   This license is accessible at:
+%   https://creativecommons.org/licenses/by-nc-sa/4.0/
+%   The code is free to use for research purposes, but whenever used I 
+%   kindly ask to cite the following article where the theoretical 
+%   framework of the code is explained:
+%   Nugnes M., Colombo, C., and Tipaldi, M., "Coverage Area Determination 
+%   for Conical Fields of View Considering an Oblate Earth", Journal of 
+%   Guidance, Control, and Dynamics, Vol. 42, No. 10, pp. 2233-2245, 2019.
+%   DOI: https://doi.org/10.2514/1.G004156.
+%   For more info about this research visit the website: 
+%   https://compass.polimi.it. 
+%   For commercial use, please contact the author. 
 %
 % ACKNWOLEDGEMENT
 %   The research leading to these results has received funding from the 
@@ -83,6 +86,13 @@ u_T1 = m_T1*e_T1 + q_T1;
 u_T2 = m_T2*e_T2 + q_T2;
 r_T1 = [e_T1;u_T1;0];
 r_T2 = [e_T2;u_T2;0];
+
+% Assign the position vector P1 and P2 to the forward and backward points
+cross_prod = cross(r_T2,r_T1);
+if cross_prod(3) < 0
+    r_T1 = [e_T2;u_T2;0]; 
+    r_T2 = [e_T1;u_T1;0];
+end
 
 % Boresight-angle and ground range-angle
 eta_hor_1 = acos(((r_line_local-r_T1)'*r_line_local)/(norm(r_line_local-r_T1)*norm(r_line_local)));
